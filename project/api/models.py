@@ -1,19 +1,6 @@
-import os
 import datetime
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from project import db
 
-db = SQLAlchemy()
-
-def create_app():
-    app = Flask(__name__)
-    app_settings = os.getenv('APP_SETTINGS')
-    app.config.from_object(app_settings)
-    db.init_app(app)
-    from project.api.views import users_blueprint
-    app.register_blueprint(users_blueprint)
-    return app
-"""
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,4 +13,3 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.created_at = datetime.datetime.utcnow()
-"""
