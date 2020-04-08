@@ -3,6 +3,7 @@ from project.tests.base import BaseTestCase
 from project import db
 from project.api.models import User
 
+
 class TestUserService(BaseTestCase):
     def test_users(self):
         response = self.client.get('/ping')
@@ -15,7 +16,8 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/users',
-                data=json.dumps(dict(username='cnych', email='qikqiak@gmail.com')),
+                data=json.dumps(dict(username='cnych',
+                                     email='qikqiak@gmail.com')),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
@@ -34,7 +36,7 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('Invalid payload', data['message'])
             self.assertEqual('fail', data['status'])
-    
+
     def test_add_user_invalid_json_keys(self):
         with self.client:
             response = self.client.post(
@@ -46,7 +48,7 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('Invalid payload', data['message'])
             self.assertEqual('fail', data['status'])
-    
+
         with self.client:
             response = self.client.post(
                 '/users',
@@ -57,7 +59,7 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('Invalid payload', data['message'])
             self.assertEqual('fail', data['status'])
-    
+
     def test_add_user_duplicate_user(self):
         with self.client:
             self.client.post(
@@ -93,7 +95,7 @@ class TestUserService(BaseTestCase):
             self.assertEqual('cnych', data['data']['username'])
             self.assertEqual('qikqiak@gmail.com', data['data']['email'])
             self.assertEqual('success', data['status'])
-    
+
     def test_get_user_no_id(self):
         with self.client:
             response = self.client.get('/users/xxx')
@@ -101,7 +103,6 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('Param id error', data['message'])
             self.assertEqual('fail', data['status'])
-
 
     def test_get_user_incorrect_id(self):
         with self.client:
@@ -118,7 +119,7 @@ class TestUserService(BaseTestCase):
 
     def test_main_with_users(self):
         def add_user(username, email):
-            response = self.client.post(
+            self.client.post(
                 '/',
                 data=dict(username=username, email=email),
                 follow_redirects=True
@@ -132,7 +133,6 @@ class TestUserService(BaseTestCase):
         self.assertNotIn(b'No users!', response.data)
         self.assertIn(b'cnych', response.data)
         self.assertIn(b'qikqiak', response.data)
-        
 
     def test_main_add_user(self):
         with self.client:

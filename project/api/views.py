@@ -5,6 +5,7 @@ from project.api.models import User
 
 users_blueprint = Blueprint('users', __name__, template_folder='./templates')
 
+
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -15,12 +16,14 @@ def index():
     users = User.query.order_by(User.created_at.desc()).all()
     return render_template('index.html', users=users)
 
+
 @users_blueprint.route('/ping', methods=['GET'])
 def ping_pong():
     return jsonify({
         'status': 'success',
         'message': 'pong!'
     })
+
 
 @users_blueprint.route('/users', methods=['GET'])
 def get_users():
@@ -57,6 +60,7 @@ def get_users():
     finally:
         return jsonify(response_object), code
 
+
 @users_blueprint.route('/users', methods=['POST'])
 def add_user():
     post_data = request.get_json()
@@ -83,13 +87,14 @@ def add_user():
             'message': 'Sorry. That email already exists.'
         }
         return jsonify(response_data), 400
-    except exc.IntegrityError as e:
+    except exc.IntegrityError:
         db.session.rollback()
         response_data = {
             'status': 'fail',
             'message': 'Invalid payload.'
         }
         return jsonify(response_data), 400
+
 
 @users_blueprint.route('/users/<user_id>', methods=['GET'])
 def get_user(user_id):
